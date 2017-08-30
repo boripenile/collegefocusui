@@ -1,7 +1,6 @@
 <template>
- <div>
-   <br>
-   <div class="row text-left no-padding">
+ <div class="marginal">
+   <div class="row text-left">
     <div class="col-12 text-left">
       <p class="text-center group">
           <q-btn
@@ -16,26 +15,26 @@
         </p>
     </div> 
   </div>
-  <div class="row md-gutter justify-center items-center marginal no-padding">
+  <div class="row md-gutter justify-center items-center marginal">
     <div class="col-xs-12 col-sm-12 col-md-12">
         <p class="uppercase text-center">Please select a registration type to begin</p>
     </div>
     <template v-for="(reg, index) in registrationTypes">
-      <div class="col-xs-12 col-sm-4 col-md-4" :key="index">
+      <div class="col-xs-12 col-sm-6 col-md-4" :key="index">
         <ul class="price">
           <li v-if="reg.name === 'trial'" class="header">{{ reg.label }}</li>
-          <li v-if="reg.name === 'premium'" class="header-2">{{ reg.label }}</li>
           <li v-if="reg.name === 'basic'" class="header-3">{{ reg.label }}</li>
+          <li v-if="reg.name === 'premium'" class="header-2">{{ reg.label }}</li>
 
-          <li v-if="reg.name === 'trial'" class="grey">&#8358; 0.00</li>
-          <li v-if="reg.name === 'premium'" class="gray">&#8358; 300.00</li>
+          <li v-if="reg.name === 'trial'" class="grey">Free</li>
           <li v-if="reg.name === 'basic'" class="grey">&#8358; 250.00</li>
-
+          <li v-if="reg.name === 'premium'" class="grey">&#8358; 300.00</li>
+          
           <li>{{ reg.form.students }}</li>
           <li>{{ reg.form.teachers }}</li>
           <li>{{ reg.form.admins }}</li>
           <li>{{ reg.form.terms }}</li>
-          <li v-if="reg.form.modules">{{ reg.form.modules }}</li>
+          <li v-if="reg.form.modules"><small>{{ reg.form.modules }}</small></li>
           <li class="grey">
             <router-link :to="{ name: 'Registration', params: { type: reg.name }}">
               <small class="button">Sign Up</small>
@@ -85,14 +84,14 @@ export default {
         },
         {
           name: 'premium',
-          label: 'Advance',
+          label: 'Premium',
           form: {
             headerClass: 'header-2',
             students: 'Unlimited Students',
             teachers: 'Unlimited Teachers',
             admins: 'Unlimited Administrators',
             terms: 'Three Academic terms',
-            modules: 'All Modules'
+            modules: 'Academics, Finance, HR, Library, Hostel & more'
           }
         }
       ]

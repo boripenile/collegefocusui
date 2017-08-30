@@ -18,6 +18,10 @@ const axiosInstanceCollege = axios.create({
   baseURL: 'http://localhost:8090/collegefocusws/api/'
 })
 
+const axiosInstanceGeo = axios.create({
+  baseURL: 'https://maps.googleapis.com/maps/api/geocode/'
+})
+
 const axiosInstanceCountry = axios.create({
   baseURL: 'https://restcountries.eu/rest/v2/'
 })
@@ -34,11 +38,13 @@ axiosInstanceCollege.interceptors.request.use(loadFunction)
 axiosInstanceCountry.interceptors.request.use(loadFunction)
 axiosInstanceRegion.interceptors.request.use(loadFunction)
 axiosInstanceCity.interceptors.request.use(loadFunction)
+axiosInstanceGeo.interceptors.request.use(loadFunction)
 
 axiosInstanceCollege.interceptors.response.use(finishFunction, errorFunction)
 axiosInstanceCountry.interceptors.response.use(finishFunction, errorFunction)
 axiosInstanceRegion.interceptors.response.use(finishFunction, errorFunction)
 axiosInstanceCity.interceptors.response.use(finishFunction, errorFunction)
+axiosInstanceGeo.interceptors.response.use(finishFunction, errorFunction)
 
 let clients = {
   $http: {
@@ -46,6 +52,7 @@ let clients = {
       return {
         college: axiosInstanceCollege,
         country: axiosInstanceCountry,
+        geo: axiosInstanceGeo,
         region: axiosInstanceRegion,
         city: axiosInstanceCity
       }

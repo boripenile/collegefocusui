@@ -1,13 +1,16 @@
 <template>
   <div class="row justify-center items-center marginal">
     <div class="col-xs-12 col-sm-10 col-md-10">
+      <div class="row justify-center">
+        {{ selectedType.toUpperCase() }}
+      </div><br/>
       <q-stepper vertical color="teal" ref="registration" alternative-labels>
-        <q-step default name="first" title="Basic Information" error-icon="warning"
+        <q-step default name="first" title="Basic Information"
         subtitle="Please complete the basic information of your school">
           <div class="row justisfy-center">
             <div class="col-xs-12 col-sm-12 col-md-12">
               <q-alert
-              color="orange-1"
+              color="orange-2"
               icon="info"
               enter="bounceInLeft"
               leave="bounceOutRight"
@@ -20,7 +23,7 @@
           </div><br>
           <div class="row text-left">
             <div class="col-xs-12 col-sm-12 col-md-12">
-              <q-chip class="bg-lime-2 text-black"><q-checkbox v-model="publicSchool" left-label>
+              <q-chip class="bg-lime-1 text-black"><q-checkbox v-model="publicSchool" left-label>
                 <small>Please select if your school is a public school</small>
               </q-checkbox></q-chip>
             </div>
@@ -45,9 +48,29 @@
           </div>
           <div class="row sm-gutter">
             <div class="col-xs-12 col-sm-6 col-md-6">
-              <q-chip class="bg-lime-2 text-black"><q-checkbox v-model="abbreviation" left-label>
+              <q-chip class="bg-lime-1 text-black"><q-checkbox v-model="abbreviation" left-label>
                 <small>Please select to enter school abbreviation</small>
               </q-checkbox></q-chip>
+            </div>
+          </div>
+          <div class="row sm-gutter">
+            <div class="col-xs-12 col-sm-6 col-md-6">
+              <q-field>
+                  <q-input stack-label="Address Line 1" 
+                  @blur="$v.school.address.addressLine1.$touch" @keyup="checkBasicData"
+                  class="full-width text-left" v-model="school.address.addressLine1" :after="[
+                    {
+                      icon: 'warning',
+                      error: true
+                    }
+                  ]"/>
+              </q-field>
+            </div>
+            <div class="col-xs-12 col-sm-6 col-md-6">
+              <q-field>
+                  <q-input stack-label="Address Line 2"
+                  class="full-width text-left" v-model="school.address.addressLine2" />
+              </q-field>
             </div>
           </div>
           <div class="row items-center">
@@ -92,21 +115,17 @@
           </div>
           <div class="row sm-gutter">
             <div class="col-xs-12 col-sm-6 col-md-6">
-              <q-field>
-                  <q-input stack-label="Address Line 1" 
-                  @blur="$v.school.address.addressLine1.$touch" @keyup="checkBasicData"
-                  class="full-width text-left" v-model="school.address.addressLine1" :after="[
-                    {
-                      icon: 'warning',
-                      error: true
-                    }
-                  ]"/>
-              </q-field>
+              <q-chip class="bg-lime-1 text-black"><q-checkbox v-model="noCityFound" left-label>
+                <small>Please select if your city is not in list</small>
+              </q-checkbox></q-chip>
             </div>
-            <div class="col-xs-12 col-sm-6 col-md-6">
+          </div>
+          <div class="row" v-if="noCityFound">
+            <div class="col-xs-12 col-sm-12 col-md-12">
               <q-field>
-                  <q-input stack-label="Address Line 2"
-                  class="full-width text-left" v-model="school.address.addressLine2" />
+                <q-input stack-label="Please enter your city" 
+                  @blur="$v.schoolCity.$touch" :autofocus="noCityFound" @keyup="checkSchoolCity"
+                  class="full-width text-left" v-model="schoolCity"/>
               </q-field>
             </div>
           </div>
@@ -115,31 +134,154 @@
               <q-btn color="orange" :disabled="!isBasicValid" @click="$refs.registration.next()">Continue</q-btn>
           </q-stepper-navigation>
         </q-step>
-        <q-step error name="second" title="Custom channels" subtitle="Alert message">
-          <div v-for="n in 10" :key="n">Step 2</div>
+        <q-step icon="person" name="second" title="Contact Information" subtitle="Please provide the school primary contact">
+          <div class="row justisfy-center">
+            <div class="col-xs-12 col-sm-12 col-md-12">
+              <q-alert
+              color="orange-2"
+              icon="info"
+              enter="bounceInLeft"
+              leave="bounceOutRight"
+              appear
+              dismissible
+            >
+              <small class="text-black">Office phone number is optional</small>
+            </q-alert>
+            </div>
+          </div><br>
+          <div class="row sm-gutter">
+            <div class="col-xs-12 col-sm-12 col-md-12">
+              <q-field icon="person">
+                <q-input stack-label="Contact Name"
+                  @blur="$v.contact.contactName.$touch" @keyup="checkContactData"
+                  class="full-width text-left" v-model="contact.contactName" />
+              </q-field>
+            </div>
+          </div>
+          <div class="row sm-gutter">
+            <div class="col-xs-12 col-sm-6 col-md-6">
+              <q-field>
+                <q-input :prefix="callingCodeLabel" stack-label="Mobile Number"
+                  @blur="$v.contact.mobileNumber.$touch" @keyup="checkContactData"
+                  class="full-width text-left" v-model="contact.mobileNumber" />
+              </q-field>
+            </div>
+            <div class="col-xs-12 col-sm-6 col-md-6">
+              <q-field>
+                <q-input :prefix="callingCodeLabel" stack-label="Office Phone number"
+                  @blur="$v.contact.phoneNumber.$touch" @keyup="checkContactData"
+                  class="full-width text-left" v-model="contact.phoneNumber" />
+              </q-field>
+            </div>
+          </div>
           <q-stepper-navigation class="row justify-center">
-            <q-btn color="secondary" :disabled="!isBasicValid" @click="$refs.registration.next()">Next</q-btn>
+            <q-btn color="orange" :disabled="!isContactValid" @click="$refs.registration.next()">Next</q-btn>
             <q-btn color="secondary" flat @click="$refs.registration.previous()">Back</q-btn>
           </q-stepper-navigation>
         </q-step>
-        <q-step name="third" title="Get code">
-          <div v-for="n in 3" :key="n">Step 3</div>
-          <q-stepper-navigation>
-            <q-btn color="secondary" @click="$refs.registration.next()">Next</q-btn>
+        <q-step icon="settings" name="third" title="Administrator Information" subtitle="Please provide your administrator">
+          <div class="row justisfy-center">
+            <div class="col-xs-12 col-sm-12 col-md-12">
+              <q-alert
+              color="orange-2"
+              icon="info"
+              enter="bounceInLeft"
+              leave="bounceOutRight"
+              appear
+              dismissible
+            >
+              <small class="text-black">Password length must not be less than 6 characters</small>
+            </q-alert>
+            </div>
+          </div><br>
+          <div class="row sm-gutter">
+            <div class="col-xs-12 col-sm-12 col-md-12">
+              <q-field icon="person">
+                <q-input stack-label="Email Address"
+                  @blur="$v.admin.email.$touch" @keyup="checkAdminData"
+                  class="full-width text-left" v-model="admin.email" />
+              </q-field>
+            </div>
+          </div>
+          <div class="row sm-gutter">
+            <div class="col-xs-12 col-sm-6 col-md-6">
+              <q-field>
+                <q-input stack-label="Username"
+                  @blur="$v.admin.username.$touch" @keyup="checkAdminData"
+                  class="full-width text-left" v-model="admin.username" />
+              </q-field>
+            </div>
+            <div class="col-xs-12 col-sm-6 col-md-6">
+              
+              <q-field>
+                <!-- <password :placeholder="passwordPlaceholder" 
+                  @blur="$v.admin.password.$touch" @keyup="checkAdminData"
+                  v-model="admin.password" class="input full-width text-left"
+                  :secureLength="secureLength"></password> -->
+                <q-input stack-label="Choose a password"
+                  @blur="$v.admin.password.$touch" @keyup="checkAdminData" :min="6"
+                  class="full-width text-left" type="password" v-model="admin.password" />
+              </q-field>
+            </div>
+          </div>
+          <q-stepper-navigation class="row justify-center">
+            <q-btn color="orange" :disabled="!isAdminValid" @click="$refs.registration.next()">Review</q-btn>
             <q-btn color="secondary" flat @click="$refs.registration.previous()">Back</q-btn>
           </q-stepper-navigation>
         </q-step>
-        <q-step name="fifth" disable title="Disabled">
-          <div v-for="n in 3" :key="n">Step 4</div>
-          <q-stepper-navigation>
-            <q-btn color="secondary" @click="$refs.registration.next()">Next</q-btn>
-            <q-btn color="secondary" flat @click="$refs.registration.previous()">Back</q-btn>
-          </q-stepper-navigation>
-        </q-step>
-        <q-step name="fourth" title="Review and Finalize">
-          <div v-for="n in 3" :key="n">Step 5</div>
-          <q-stepper-navigation>
-            <q-btn color="secondary" @click="$refs.registration.goToStep('first')">Restart</q-btn>
+        <q-step icon="search" name="fourth" title="Review and Finalize">
+          <div class="row justisfy-center">
+            <div class="col-xs-12 col-sm-12 col-md-12">
+              <q-alert
+              color="orange-2"
+              icon="info"
+              enter="bounceInLeft"
+              leave="bounceOutRight"
+              appear
+              dismissible
+            >
+              <small class="text-black">Please review your information before you submit your request.</small>
+            </q-alert>
+            </div>
+          </div><br>
+          <q-list separator>
+          <q-list-header><big>Basic Information</big></q-list-header>
+          <q-item>
+            <q-item-main :label="`School Name: ` + school.schoolName" />
+            <q-item-main v-if="school.abbreviation" :label="`Abbreviation: ` +school.abbreviation" />
+          </q-item>
+          <q-item>
+            <q-item-main :label="`Country: ` + school.selected.label" />
+          </q-item>
+          <q-item>
+            <q-item-main :label="`State: ` + school.selectedState.label" />
+            <q-item-main :label="`City: ` + school.selectedCity.label" />
+          </q-item>
+          <q-item>
+            <q-item-main :label="`Address Line 1: ` + school.address.addressLine1" />
+          </q-item>
+          <q-item v-if="school.address.addressLine2">
+            <q-item-main :label="`Address Line 2: ` + school.address.addressLine2" />
+          </q-item>
+          <q-list-header><big>Contact Information</big></q-list-header>
+          <q-item>
+            <q-item-main :label="`Contact Name: ` + contact.contactName" />
+          </q-item>
+           <q-item>
+            <q-item-main :label="`Mobile Number: +${this.school.selected.callingCode}` + contact.mobileNumber" />
+            <q-item-main :label="`Phone Number: +${this.school.selected.callingCode}` + contact.phoneNumber" />
+          </q-item>
+          <q-list-header><big>Administrator Information</big></q-list-header>
+          <q-item>
+            <q-item-main :label="`Email Address: ` + admin.email" />
+          </q-item>
+           <q-item>
+            <q-item-main :label="`Username: ` + admin.username" />
+            <q-item-main :label="`Password: *************************`" />
+          </q-item>
+          </q-list>
+          <q-stepper-navigation class="row justify-center">
+            <q-btn color="primary" @click="getGeoLatLng(submitRegistration)">Register Now</q-btn>
             <q-btn color="secondary" flat @click="$refs.registration.previous()">Back</q-btn>
           </q-stepper-navigation>
         </q-step>
@@ -153,18 +295,25 @@
 
 <script>
 import { mapGetters } from 'vuex'
+import Password from 'vue-password-strength-meter'
 import jquery from 'jquery'
-import { required, email, minLength } from 'vuelidate/lib/validators'
+import { required, email, minLength, numeric } from 'vuelidate/lib/validators'
 import { QStepper, QStep, QStepperNavigation, QBtn, QCheckbox,
-  QInput, QField, QSelect, QChip, Loading, QAlert } from 'quasar'
+  QInput, QField, QSelect, QChip, Loading, QAlert, QListHeader,
+  QItem, QList, QItemMain } from 'quasar'
 export default {
   data () {
     return {
+      passwordPlaceholder: 'enter 6 characters or more.',
+      secureLength: 6,
+      noCityFound: false,
       isBasicValid: false,
       isContactValid: false,
+      isAdminValid: false,
       publicSchool: false,
       abbreviation: false,
-      selectedType: this.$route.params.type,
+      schoolCity: '',
+      selectedType: this.$route.params.type + ' ' + 'Registration',
       countries: [],
       states: [],
       cities: [],
@@ -177,7 +326,9 @@ export default {
         address: {
           country: '',
           city: '',
-          addressLine1: ''
+          addressLine1: '',
+          longitude: 0,
+          latitude: 0
         }
       },
       admin: {
@@ -187,7 +338,8 @@ export default {
       },
       contact: {
         contactName: '',
-        mobileNumber: ''
+        mobileNumber: '',
+        phoneNumber: ''
       }
     }
   },
@@ -201,31 +353,150 @@ export default {
     QField,
     QSelect,
     QChip,
-    QAlert
+    QAlert,
+    QListHeader,
+    QItem,
+    QItemMain,
+    QList,
+    Password
   },
   computed: {
-    ...mapGetters(['getCountryApiKey'])
+    ...mapGetters(['getCountryApiKey', 'getGeoApiKey']),
+    callingCodeLabel () {
+      if (this.school.selected) {
+        return '+' + this.school.selected.callingCode
+      }
+    }
   },
   mounted () {
     this.getCountries()
   },
   methods: {
+    getGeoLatLng (registerCallback) {
+      var address = null
+      var city = null
+      if (this.schoolCity) {
+        city = this.schoolCity
+      }
+      else {
+        city = this.school.selectedCity.label
+      }
+      if (this.school.selectedState) {
+        address = city + ', ' + this.school.selectedState.label + ', ' + this.school.selected.label
+      }
+      else {
+        address = city + ', ' + this.school.selected.label
+      }
+      this.$http.geo.get('json', {
+        params: {
+          'address': address,
+          'key': this.getGeoApiKey
+        }
+      }).then(response => {
+        var data = response.data.results
+        console.log('Before: ', JSON.stringify(data))
+        if (data.length > 0) {
+          this.school.address.latitude = data[0].geometry.location.lat
+          this.school.address.longitude = data[0].geometry.location.lng
+
+          console.log(JSON.stringify(this.school))
+          registerCallback()
+        }
+        else {
+          console.log('No return')
+          console.log(JSON.stringify(this.school))
+          registerCallback()
+        }
+      }).catch(error => {
+        console.log('Error occured: ' + error)
+        registerCallback()
+      })
+    },
+    submitRegistration () {
+      var school = {
+        address: {},
+        contacts: [],
+        admin: {}
+      }
+      school.address.country = this.school.selected.label
+      school.address.state = this.school.selectedState.label
+      if (this.noCityFound) {
+        school.address.city = this.schoolCity
+      }
+      else {
+        school.address.city = this.school.selectedCity.label
+      }
+      school.registrationType = this.selectedType
+      if (this.publicSchool) {
+        school.schoolType = 'government'
+      }
+      else {
+        school.schoolType = 'private'
+      }
+      school.schoolName = this.school.schoolName
+      if (this.school.address.addressLine2) {
+        school.address.addressLine2 = this.school.address.addressLine2
+      }
+      if (this.school.abbreviation) {
+        school.schoolShortName = this.school.abbreviation
+      }
+      school.address.addressLine1 = this.school.address.addressLine1
+      school.address.longitude = this.school.address.longitude
+      school.address.latitude = this.school.address.latitude
+      school.address.addressLine1 = this.school.address.addressLine1
+      school.admin = this.admin
+      var mobileNumber = '+' + this.selected.callingCode + this.contact.mobileNumber
+      this.contact.mobileNumber = mobileNumber
+      if (this.contact.phoneNumber) {
+        var phoneNumber = '+' + this.selected.callingCode + this.contact.phoneNumber
+        this.contact.phoneNumber = phoneNumber
+      }
+      school.contacts.push(this.contact)
+      console.log(JSON.stringify(school))
+    },
+    checkSchoolCity () {
+      this.$v.schoolCity.$touch()
+      if (this.$v.admin.$error) {
+        this.isBasicValid = false
+      }
+      else {
+        this.checkBasicData()
+      }
+    },
+    checkAdminData () {
+      this.$v.admin.$touch()
+      if (this.$v.admin.$error) {
+        this.isAdminValid = false
+      }
+      else {
+        this.isAdminValid = true
+      }
+    },
+    checkContactData () {
+      this.$v.contact.$touch()
+      if (this.$v.contact.$error) {
+        this.isContactValid = false
+      }
+      else {
+        this.isContactValid = true
+      }
+    },
     checkBasicData () {
       this.$v.school.$touch()
-      console.log('About to validate')
       if (this.$v.school.$error) {
         this.isBasicValid = false
-        console.log('Validating...: ', this.isBasicValid)
       }
       else {
         this.isBasicValid = true
-        console.log('Validated...: ', this.isBasicValid)
       }
     },
     onCountrySelect (data) {
-      this.getSelectedCountry(data, this.getStates(data))
+      this.school.selectedCity = {}
+      this.school.selectedState = {}
+      this.getSelectedCountry(data)
     },
     onStateSelect (data) {
+      this.school.selectedCity = {}
       this.getSelectedState(data)
     },
     onCitySelect (data) {
@@ -265,11 +536,12 @@ export default {
               self.school.selectedState = self.states[index]
             }
           }
+          this.checkBasicData()
           Loading.hide()
         })
     },
-    getSelectedCountry (code, stateCallback) {
-      stateCallback(code)
+    getSelectedCountry (code) {
+      this.getStates(code)
     },
     getStates (countryCode) {
       var self = this
@@ -292,6 +564,7 @@ export default {
               self.school.selected = self.countries[index]
             }
           }
+          this.checkBasicData()
           Loading.hide()
         })
     },
@@ -306,7 +579,8 @@ export default {
               this.countries.push({
                 value: data[index].alpha2Code,
                 label: data[index].name,
-                avatar: data[index].flag
+                avatar: data[index].flag,
+                callingCode: data[index].callingCodes[0]
               })
             }
           }
@@ -314,6 +588,9 @@ export default {
     }
   },
   validations: {
+    schoolCity: {
+      required
+    },
     school: {
       schoolName: { required },
       address: {
@@ -337,6 +614,18 @@ export default {
         }
       }
     },
+    contact: {
+      contactName: {
+        required
+      },
+      mobileNumber: {
+        required,
+        numeric
+      },
+      phoneNumber: {
+        numeric
+      }
+    },
     admin: {
       email: {
         required,
@@ -347,7 +636,7 @@ export default {
       },
       password: {
         required,
-        minLength: minLength(4)
+        minLength: minLength(6)
       }
     }
   }
@@ -356,6 +645,9 @@ export default {
 
 <style>
   .marginal {
-    margin-top: 5%;
+    margin-top: 2%;
+  }
+  html {
+    background-color: #FAFAFA;
   }
 </style>

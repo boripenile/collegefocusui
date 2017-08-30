@@ -56,7 +56,7 @@
           <q-btn color="negative" @click="closeModal('roleModal')">Discard</q-btn>
         </q-modal>
         <q-modal ref="rolePermissionModal" minimized noBackdropDismiss :content-css="{padding: '25px', width: '400px', textAlign: 'left'}">
-          <q-list separator filter>
+          <q-list separator>
               <q-list-header><big>{{ selectedRoleName }} Permissions</big></q-list-header>
               <q-list-header class="text-negative">Manage permissions of this role</q-list-header>
               <q-item v-for="(perm, index) in rolePermissions" :key="index">
