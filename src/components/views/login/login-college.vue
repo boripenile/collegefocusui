@@ -1,5 +1,6 @@
 <template>
-  <div class="row text-white justify-center" :class="heightSize">
+  <div>
+  <div class="row text-white justify-center items-center" :class="heightSize">
     <q-card class="card col-xs-10 col-sm-6 col-md-3" id="login">
       <q-card-title class="text-center" :class="finalBgColor">
         <svg id="logo" viewBox="0 0 483 483"
@@ -25,6 +26,22 @@
         <q-btn color="teal" class="full-width" @click="login">Login</q-btn>
       </q-card-actions>
     </q-card>
+    </div>
+    <br>
+    <div class="row justify-center sm-gutter">
+        <div class="col-12 text-center">
+          <router-link to="/features">
+            <small class="text-grey">Forget your password?</small>
+          </router-link>
+        </div>
+    </div>
+    <div class="row justify-center">
+        <div class="col-12 text-center">
+          <router-link to="/features">
+            <small class="text-red">Click to register your school</small>
+          </router-link>
+        </div>
+    </div>
   </div>
 </template>
 
@@ -41,7 +58,9 @@
            QCardSeparator,
            QCardActions,
            QInput,
-           QBtn} from 'quasar'
+           QChip,
+           QSideLink,
+           QBtn } from 'quasar'
   export default {
     components: {
       QCard,
@@ -50,6 +69,8 @@
       QCardSeparator,
       QCardActions,
       QInput,
+      QChip,
+      QSideLink,
       QBtn
     },
     mounted () {

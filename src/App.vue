@@ -6,7 +6,7 @@
     view="lHh Lpr fff"
     :left-class="{'bg-grey-2': true}"
   >
-    <q-toolbar slot="header" color="teal" class="glossy" v-show="getLayoutNeeded">
+    <q-toolbar slot="header" color="teal" class="glossy" v-if="getUser">
       <q-btn
         flat
         @click="$refs.layout.toggleLeft()"
@@ -20,7 +20,7 @@
       </q-toolbar-title>
     </q-toolbar>
 
-    <div slot="left" v-if="getLayoutNeeded">
+    <div slot="left" v-if="getUser">
       <!--
         Use <q-side-link> component
         instead of <q-item> for
@@ -32,7 +32,7 @@
           <img src="./assets/img/avatar-1.svg" id="avatar" class="inline-block"> 
           </div>
           <!-- <div class="row"> -->
-          <div class="col-8" id="user-name">
+          <div class="col-8" id="user-name" v-if="getUser">
               <span class="text-black"> {{ getUser.username }} </span>
               <hr>
               <span class="text-black"> {{ getUser.email }} </span>
@@ -54,7 +54,7 @@
           <q-fab-action
             class="white"
             @click="logOut"
-            icon="alarm"
+            icon="exit_to_app"
           >
           <q-tooltip anchor="center left" self="center right" :offset="[0, 10]">Log Out</q-tooltip>
           </q-fab-action>

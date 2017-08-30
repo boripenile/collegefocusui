@@ -1,5 +1,6 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
+import store from 'configs/store'
 
 Vue.use(VueRouter)
 
@@ -8,7 +9,7 @@ function load (component) {
   return () => System.import(`components/${component}.vue`)
 }
 
-export default new VueRouter({
+var router = new VueRouter({
   /*
    * NOTE! VueRouter "history" mode DOESN'T works for Cordova builds,
    * it is only to be used only for websites.
@@ -30,5 +31,44 @@ export default new VueRouter({
     { path: '/registration/:type', name: 'Registration', component: load('registration') },
     // Always leave this last one
     { path: '*', component: load('Error404') } // Not found
-  ]
+  ],
+  mode: 'history',
+  scrollBehavior: function (to, from, savedPosition) {
+    return savedPosition || { x: 0, y: 0 }
+  }
 })
+// Some middleware to help us ensure the user is authenticated.
+router.beforeEach((to, from, next) => {
+  // window.console.log('Transition', transition)
+  var token = store.state.token
+
+  if (to.name === 'Features') {
+    next()
+  }
+  else if (to.name === 'Registration') {
+    next()
+  }
+  else if (token === null || token === 'undefined') {
+    if (to.name === 'Login') {
+      next()
+    }
+    else {
+      next({
+        path: '/',
+        query: {redirect: to.fullPath}
+      })
+    }
+  }
+  else {
+    if (to.name === 'Login') {
+      next({
+        path: '/dashboard',
+        query: {redirect: to.fullPath}
+      })
+    }
+    else {
+      next()
+    }
+  }
+})
+export default router

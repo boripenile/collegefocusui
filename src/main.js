@@ -20,6 +20,7 @@ import store from 'configs/store'
 import Vuelidate from 'vuelidate'
 
 import { mapGetters, mapMutations } from 'vuex'
+// import { sync } from 'vuex-router-sync'
 
 Vue.config.productionTip = false
 Vue.use(Vuelidate)
@@ -55,10 +56,8 @@ Quasar.start(() => {
         }
         else {
           if (this.$router.name === 'Registration') {
-            console.log('Heerererer')
             this.$router.next()
           }
-          console.log('I am here....')
           this.setUser(null)
           this.$router.replace('/')
         }
@@ -68,17 +67,18 @@ Quasar.start(() => {
       ...mapGetters(['getLayoutNeeded', 'getMenuCollapse', 'getToken', 'getUser',
         'getRoles', 'getPermissions'])
     },
-    router,
-    store,
+    router: router,
+    store: store,
     render (h) {
       var logged = this.getToken
+      console.log('Logged 1: ' + logged)
       if (logged) {
-        console.log('Logged: ', logged)
+        console.log('Logged 2 : ', logged)
         this.setLayoutNeeded(true)
         this.setIsLoginPage(false)
       }
       else {
-        console.log('Not Logged: ', logged)
+        console.log('Not Logged 3: ', logged)
         this.setLayoutNeeded(false)
         this.setIsLoginPage(true)
       }

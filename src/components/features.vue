@@ -1,9 +1,24 @@
 <template>
-  <div class="row md-gutter justify-center items-center marginal">
+ <div>
+   <br>
+   <div class="row text-left no-padding">
+    <div class="col-12 text-left">
+      <p class="text-center group">
+          <q-btn
+            v-if="canGoBack"
+            color="teal"
+            push
+            @click="goBack"
+            icon="keyboard_arrow_left"
+          >
+            Back
+          </q-btn>
+        </p>
+    </div> 
+  </div>
+  <div class="row md-gutter justify-center items-center marginal no-padding">
     <div class="col-xs-12 col-sm-12 col-md-12">
-      <blockquote class="text-center">
-        <p class="uppercase">Please select a registration type to begin</p>
-      </blockquote>
+        <p class="uppercase text-center">Please select a registration type to begin</p>
     </div>
     <template v-for="(reg, index) in registrationTypes">
       <div class="col-xs-12 col-sm-4 col-md-4" :key="index">
@@ -23,7 +38,7 @@
           <li v-if="reg.form.modules">{{ reg.form.modules }}</li>
           <li class="grey">
             <router-link :to="{ name: 'Registration', params: { type: reg.name }}">
-              <q-btn class="button">Sign Up</q-btn>
+              <small class="button">Sign Up</small>
             </router-link>
             
           </li>
@@ -31,15 +46,17 @@
       </div>
     </template>
   </div>
+  </div>
 </template>
 
 <script>
 import { QCard, QCardTitle, QCardMain,
   QCardSeparator, QCardActions, QBtn, QListHeader,
-  QItemSide, QItem, QItemMain, QChip } from 'quasar'
+  QItemSide, QItem, QItemMain, QChip, QSideLink } from 'quasar'
 export default {
   data () {
     return {
+      canGoBack: window.history.length > 1,
       registrationTypes: [
         {
           name: 'trial',
@@ -48,20 +65,9 @@ export default {
             headerClass: 'header',
             students: '10 Students',
             teachers: 'Unlimited Teachers',
-            admins: 'Unlimited Administrators',
-            terms: 'One Academic term'
-          }
-        },
-        {
-          name: 'premium',
-          label: 'Advance',
-          form: {
-            headerClass: 'header-2',
-            students: 'Unlimited Students',
-            teachers: 'Unlimited Teachers',
-            admins: 'Unlimited Administrators',
-            terms: 'Three Academic term',
-            modules: 'All Modules'
+            admins: 'Single Administrator',
+            terms: 'One Academic term',
+            modules: 'Academics'
           }
         },
         {
@@ -73,7 +79,20 @@ export default {
             students: 'Unlimited Students',
             teachers: 'Unlimited Teachers',
             admins: 'Unlimited Administrators',
-            terms: 'Three Academic term'
+            terms: 'Three Academic terms',
+            modules: 'Academics, Finance & HR'
+          }
+        },
+        {
+          name: 'premium',
+          label: 'Advance',
+          form: {
+            headerClass: 'header-2',
+            students: 'Unlimited Students',
+            teachers: 'Unlimited Teachers',
+            admins: 'Unlimited Administrators',
+            terms: 'Three Academic terms',
+            modules: 'All Modules'
           }
         }
       ]
@@ -90,12 +109,17 @@ export default {
     QItemSide,
     QItem,
     QItemMain,
+    QSideLink,
     QChip
   },
   methods: {
     startRegistration (data) {
       console.log('Type: ' + data)
       this.$router.push('/registration/' + data)
+    },
+    goBack () {
+      // this.$router.push('/dashboard')
+      window.history.go(-1)
     }
   }
 }
@@ -106,7 +130,8 @@ export default {
 }
 
 .marginal {
-  margin: 3%;
+  margin-left: 5%;
+  margin-right: 7%;
 }
 /* Create three columns of equal width */
 .columns {

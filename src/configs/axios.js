@@ -18,15 +18,36 @@ const axiosInstanceCollege = axios.create({
   baseURL: 'http://localhost:8090/collegefocusws/api/'
 })
 
+const axiosInstanceCountry = axios.create({
+  baseURL: 'https://restcountries.eu/rest/v2/'
+})
+
+const axiosInstanceRegion = axios.create({
+  baseURL: 'https://battuta.medunes.net/api/region/'
+})
+
+const axiosInstanceCity = axios.create({
+  baseURL: 'https://battuta.medunes.net/api/city/'
+})
+
 axiosInstanceCollege.interceptors.request.use(loadFunction)
+axiosInstanceCountry.interceptors.request.use(loadFunction)
+axiosInstanceRegion.interceptors.request.use(loadFunction)
+axiosInstanceCity.interceptors.request.use(loadFunction)
 
 axiosInstanceCollege.interceptors.response.use(finishFunction, errorFunction)
+axiosInstanceCountry.interceptors.response.use(finishFunction, errorFunction)
+axiosInstanceRegion.interceptors.response.use(finishFunction, errorFunction)
+axiosInstanceCity.interceptors.response.use(finishFunction, errorFunction)
 
 let clients = {
   $http: {
     get () {
       return {
-        college: axiosInstanceCollege
+        college: axiosInstanceCollege,
+        country: axiosInstanceCountry,
+        region: axiosInstanceRegion,
+        city: axiosInstanceCity
       }
     },
     post () {

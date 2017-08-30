@@ -18,7 +18,8 @@
 </template>
 
 <script>
-  import { QItemSide, QItemMain, QSideLink, QList, QListHeader, QCollapsible, QTransition } from 'quasar'
+  import { QItemSide, QItemMain, QSideLink,
+    QList, QListHeader, QCollapsible, QTransition } from 'quasar'
   export default {
     props: ['links'],
     watch: {
