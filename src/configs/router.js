@@ -29,6 +29,7 @@ var router = new VueRouter({
     { path: '/services', name: 'Services', component: load('views/settings/services') },
     { path: '/features', name: 'Features', component: load('features') },
     { path: '/registration/:type', name: 'Registration', component: load('registration') },
+    { path: '/activate/:code', name: 'Activation', component: load('activation') },
     // Always leave this last one
     { path: '*', component: load('Error404') } // Not found
   ],
@@ -46,6 +47,9 @@ router.beforeEach((to, from, next) => {
     next()
   }
   else if (to.name === 'Registration') {
+    next()
+  }
+  else if (to.name === 'Activation') {
     next()
   }
   else if (token === null || token === 'undefined') {

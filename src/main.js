@@ -50,7 +50,6 @@ Quasar.start(() => {
         console.log('Token: ', this.getToken)
         var token = this.getToken
         if (token) {
-          console.log('I am successful....')
           this.$store.state.user = this.getUser
           this.$router.replace('/dashboard')
         }
@@ -58,8 +57,10 @@ Quasar.start(() => {
           if (this.$router.name === 'Registration') {
             this.$router.next()
           }
+          else if (this.$router.name === 'Activation') {
+            this.$router.next()
+          }
           this.setUser(null)
-          this.$router.replace('/')
         }
       }
     },

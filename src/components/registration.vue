@@ -2,7 +2,7 @@
   <div class="row justify-center items-center marginal">
     <div class="col-xs-12 col-sm-10 col-md-10">
       <div class="row justify-center">
-        {{ selectedType.toUpperCase() }}
+        {{ title.toUpperCase() }}
       </div><br/>
       <q-stepper vertical color="teal" ref="registration" alternative-labels>
         <q-step default name="first" title="Basic Information"
@@ -74,9 +74,6 @@
             </div>
           </div>
           <div class="row items-center">
-            <!-- <div class="col-xs-1 col-sm-1 col-md-1">
-              <img :src="selected.avatar" width="35" /> 
-            </div> -->
             <div class="col-xs-12 col-sm-12 col-md-12">
               <q-field>
                   <q-select
@@ -104,19 +101,22 @@
             <div class="col-xs-12 col-sm-6 col-md-6">
               <q-field>
                   <q-select
-                    v-model="school.selectedCity" @change="onCitySelect($event)"
+                    v-model="selectedCity" @change="onCitySelect($event)"
                     float-label="City" @keyup="checkBasicData"
-                    @blur="$v.school.selectedCity.value.$touch"
-                    :display-value="school.selectedCity.label"
+                    @blur="$v.selectedCity.value.$touch"
+                    :display-value="selectedCity.label"
                     filter filter-placeholder="Search"
                     :options="cities" />
               </q-field>
+              
             </div>
           </div>
-          <div class="row sm-gutter">
+          <div class="row sm-gutter" v-if="school.selectedState.value">
+            <div class="col-xs-12 col-sm-6 col-md-6"></div>
             <div class="col-xs-12 col-sm-6 col-md-6">
-              <q-chip class="bg-lime-1 text-black"><q-checkbox v-model="noCityFound" left-label>
-                <small>Please select if your city is not in list</small>
+              <q-chip class="bg-lime-1 text-black"><q-checkbox v-model="noCityFound" left-label 
+                @change="checkBasicData">
+                <small>Please select if your city is not in the list</small>
               </q-checkbox></q-chip>
             </div>
           </div>
@@ -132,6 +132,7 @@
           <!-- Navigation for this step at the end of QStep-->
           <q-stepper-navigation class="row justify-center">
               <q-btn color="orange" :disabled="!isBasicValid" @click="$refs.registration.next()">Continue</q-btn>
+              <q-btn color="red" flat @click="$refs.successful.open()">Open</q-btn>
           </q-stepper-navigation>
         </q-step>
         <q-step icon="person" name="second" title="Contact Information" subtitle="Please provide the school primary contact">
@@ -196,23 +197,24 @@
           </div><br>
           <div class="row sm-gutter">
             <div class="col-xs-12 col-sm-12 col-md-12">
-              <q-field icon="person">
-                <q-input stack-label="Email Address"
-                  @blur="$v.admin.email.$touch" @keyup="checkAdminData"
+              <q-field icon="mail">
+                <q-input stack-label="Email Address" :loading="emailLoading"
+                  @blur="$v.admin.email.$touch" @keyup="checkEmail(checkAdminData)"
                   class="full-width text-left" v-model="admin.email" />
               </q-field>
+              <small v-if="isEmailExist" class="text-negative">Email address already exists</small>
             </div>
           </div>
           <div class="row sm-gutter">
             <div class="col-xs-12 col-sm-6 col-md-6">
               <q-field>
-                <q-input stack-label="Username"
-                  @blur="$v.admin.username.$touch" @keyup="checkAdminData"
+                <q-input stack-label="Username" :loading="userLoading"
+                  @blur="$v.admin.username.$touch" @keyup="verifyUsername(checkAdminData)"
                   class="full-width text-left" v-model="admin.username" />
               </q-field>
+              <small v-if="isUserExist" class="text-negative">Username has been taken</small>
             </div>
             <div class="col-xs-12 col-sm-6 col-md-6">
-              
               <q-field>
                 <!-- <password :placeholder="passwordPlaceholder" 
                   @blur="$v.admin.password.$touch" @keyup="checkAdminData"
@@ -255,7 +257,8 @@
           </q-item>
           <q-item>
             <q-item-main :label="`State: ` + school.selectedState.label" />
-            <q-item-main :label="`City: ` + school.selectedCity.label" />
+            <q-item-main v-if="noCityFound" :label="`City: ` + schoolCity" />
+            <q-item-main v-else :label="`City: ` + selectedCity.label" />
           </q-item>
           <q-item>
             <q-item-main :label="`Address Line 1: ` + school.address.addressLine1" />
@@ -277,7 +280,7 @@
           </q-item>
            <q-item>
             <q-item-main :label="`Username: ` + admin.username" />
-            <q-item-main :label="`Password: *************************`" />
+            <q-item-main :label="`Password: ***`" />
           </q-item>
           </q-list>
           <q-stepper-navigation class="row justify-center">
@@ -286,25 +289,38 @@
           </q-stepper-navigation>
         </q-step>
       </q-stepper>
-    </div>
-    <div class="col-xs-12 col-sm-10 col-md-8">
-      
+      <q-modal ref="successful" minimized noBackdropDismiss noEscDismiss
+        :content-css="{padding: '20px', width: '400px', textAlign: 'center'}">
+        <q-icon name="check_circle" color="positive" style="font-size: 80px" />
+        <br>
+        <h5>Registration completed</h5>
+        <strong>
+          <small class="text-negative">We received your registration details and an account verification instruction has been sent to your registered email. 
+          Please follow the instruction to verify your registration.</small></strong>
+        <br><br>
+        <q-btn color="secondary" @click="closeSuccessful">ok</q-btn>
+      </q-modal>
     </div>
   </div>
 </template>
 
 <script>
 import { mapGetters } from 'vuex'
+import base64 from 'base-64'
 import Password from 'vue-password-strength-meter'
 import jquery from 'jquery'
 import { required, email, minLength, numeric } from 'vuelidate/lib/validators'
 import { QStepper, QStep, QStepperNavigation, QBtn, QCheckbox,
   QInput, QField, QSelect, QChip, Loading, QAlert, QListHeader,
-  QItem, QList, QItemMain } from 'quasar'
+  QItem, QList, QItemMain, QModal, QIcon } from 'quasar'
 export default {
   data () {
     return {
       passwordPlaceholder: 'enter 6 characters or more.',
+      isUserExist: false,
+      isEmailExist: false,
+      userLoading: false,
+      emailLoading: false,
       secureLength: 6,
       noCityFound: false,
       isBasicValid: false,
@@ -313,15 +329,15 @@ export default {
       publicSchool: false,
       abbreviation: false,
       schoolCity: '',
-      selectedType: this.$route.params.type + ' ' + 'Registration',
+      selectedType: this.$route.params.type,
       countries: [],
       states: [],
       cities: [],
+      selectedCity: {},
       school: {
         schoolName: '',
         selected: {},
         selectedState: {},
-        selectedCity: {},
         contacts: [],
         address: {
           country: '',
@@ -358,7 +374,9 @@ export default {
     QItem,
     QItemMain,
     QList,
-    Password
+    Password,
+    QModal,
+    QIcon
   },
   computed: {
     ...mapGetters(['getCountryApiKey', 'getGeoApiKey']),
@@ -366,12 +384,76 @@ export default {
       if (this.school.selected) {
         return '+' + this.school.selected.callingCode
       }
+    },
+    title () {
+      if (this.selectedType) {
+        return this.selectedType + ' Registration'
+      }
     }
   },
   mounted () {
     this.getCountries()
   },
   methods: {
+    closeSuccessful () {
+      this.$refs.successful.close()
+      this.$router.replace('/')
+    },
+    verifyUsername (callback) {
+      if (this.admin.username.length > 2) {
+        this.userLoading = true
+        var code = base64.encode(this.admin.username)
+        this.$http.college.get('users/check/' + code + '/username').then(response => {
+          var data = response.data
+          if (data.data === true) {
+            console.log(JSON.stringify(data))
+            this.isUserExist = true
+            this.userLoading = false
+            callback()
+          }
+          else {
+            this.isUserExist = false
+            this.userLoading = false
+            callback()
+          }
+        }).catch(error => {
+          console.log(JSON.stringify(error))
+          this.userLoading = false
+          callback()
+        })
+      }
+      else {
+        this.checkAdminData()
+      }
+    },
+    checkEmail (callback) {
+      var email = this.admin.email
+      if (email.indexOf('@') !== -1) {
+        this.$http.college.get('users/email/check/' + email).then(response => {
+          var data = response.data
+          if (data !== null) {
+            console.log(JSON.stringify(data.data))
+            if (data.data === true) {
+              this.isEmailExist = true
+              this.emailLoading = false
+              callback()
+            }
+            else {
+              this.isEmailExist = false
+              this.emailLoading = false
+              callback()
+            }
+          }
+        }).catch(error => {
+          console.log(JSON.stringify(error))
+          this.emailLoading = false
+          callback()
+        })
+      }
+      else {
+        this.checkAdminData()
+      }
+    },
     getGeoLatLng (registerCallback) {
       var address = null
       var city = null
@@ -379,7 +461,7 @@ export default {
         city = this.schoolCity
       }
       else {
-        city = this.school.selectedCity.label
+        city = this.selectedCity.label
       }
       if (this.school.selectedState) {
         address = city + ', ' + this.school.selectedState.label + ', ' + this.school.selected.label
@@ -424,7 +506,7 @@ export default {
         school.address.city = this.schoolCity
       }
       else {
-        school.address.city = this.school.selectedCity.label
+        school.address.city = this.selectedCity.label
       }
       school.registrationType = this.selectedType
       if (this.publicSchool) {
@@ -445,18 +527,27 @@ export default {
       school.address.latitude = this.school.address.latitude
       school.address.addressLine1 = this.school.address.addressLine1
       school.admin = this.admin
-      var mobileNumber = '+' + this.selected.callingCode + this.contact.mobileNumber
-      this.contact.mobileNumber = mobileNumber
+      var mobileNumber = '+' + this.school.selected.callingCode + this.contact.mobileNumber
+      var contact = {}
+      contact.mobileNumber = mobileNumber
       if (this.contact.phoneNumber) {
-        var phoneNumber = '+' + this.selected.callingCode + this.contact.phoneNumber
-        this.contact.phoneNumber = phoneNumber
+        var phoneNumber = '+' + this.school.selected.callingCode + this.contact.phoneNumber
+        contact.phoneNumber = phoneNumber
       }
-      school.contacts.push(this.contact)
+      contact.contactName = this.contact.contactName
+      school.contacts.push(contact)
+
       console.log(JSON.stringify(school))
+
+      this.$http.college.post('schools/register', school, null).then(response => {
+        this.$refs.successful.open()
+      }).catch(error => {
+        console.log(error)
+      })
     },
     checkSchoolCity () {
       this.$v.schoolCity.$touch()
-      if (this.$v.admin.$error) {
+      if (this.$v.schoolCity.$error) {
         this.isBasicValid = false
       }
       else {
@@ -469,7 +560,12 @@ export default {
         this.isAdminValid = false
       }
       else {
-        this.isAdminValid = true
+        if (this.isUserExist || this.isEmailExist) {
+          this.isAdminValid = false
+        }
+        else {
+          this.isAdminValid = true
+        }
       }
     },
     checkContactData () {
@@ -488,15 +584,38 @@ export default {
       }
       else {
         this.isBasicValid = true
+        if (!this.noCityFound) {
+          this.$v.selectedCity.$touch()
+          if (this.$v.selectedCity.$error) {
+            console.log('Re-validating...')
+            this.isBasicValid = false
+          }
+          else {
+            console.log('Re-validating...')
+            this.isBasicValid = true
+          }
+        }
+        else {
+          if (!this.schoolCity) {
+            this.isBasicValid = false
+          }
+        }
+      }
+    },
+    resetCity () {
+      if (this.noCityFound) {
+        this.noCityFound = false
+        this.selectedCity = {}
+        this.schoolCity = ''
       }
     },
     onCountrySelect (data) {
-      this.school.selectedCity = {}
+      this.resetCity()
       this.school.selectedState = {}
       this.getSelectedCountry(data)
     },
     onStateSelect (data) {
-      this.school.selectedCity = {}
+      this.resetCity()
       this.getSelectedState(data)
     },
     onCitySelect (data) {
@@ -504,7 +623,8 @@ export default {
       for (var j = 0; j < this.cities.length; j++) {
         if (this.cities[j].value === data) {
           console.log('Found city: ' + this.cities[j].label)
-          this.school.selectedCity = this.cities[j]
+          this.selectedCity = this.cities[j]
+          this.checkBasicData()
         }
       }
     },
@@ -536,7 +656,7 @@ export default {
               self.school.selectedState = self.states[index]
             }
           }
-          this.checkBasicData()
+          self.checkBasicData()
           Loading.hide()
         })
     },
@@ -564,7 +684,7 @@ export default {
               self.school.selected = self.countries[index]
             }
           }
-          this.checkBasicData()
+          self.checkBasicData()
           Loading.hide()
         })
     },
@@ -607,11 +727,11 @@ export default {
         value: {
           required
         }
-      },
-      selectedCity: {
-        value: {
-          required
-        }
+      }
+    },
+    selectedCity: {
+      value: {
+        required
       }
     },
     contact: {
