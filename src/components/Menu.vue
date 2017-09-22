@@ -1,17 +1,36 @@
 <template>
     <q-list no-border link inset-delimiter>
+      <q-side-link item to="/dashboard">
+        <q-item-side icon="domain"/>
+        <q-item-main label="Dashboard" />
+      </q-side-link>
     <template v-for="(parent, index) in links">
-      <q-collapsible v-show="showMenuContent('superadmin', 'role:create')" 
-          :key="index" icon="settings" :label="replaceUnderlineToSpace(index)">
+      <q-collapsible :key="index" :icon="parent.icon" 
+        v-show="showMenuContent(parent.role, parent.permission)" 
+        :label="index">
         <template v-for="child in parent.routes">
           <q-transition name="menu" :key="child">
-            <q-side-link item v-show="showMenuContent(child.role, child.permission)" :to="child.route">
-              <q-item-side :icon="child.materialIcon"/>
-              <q-item-main :label="child.name" />
-            </q-side-link>
+            <div v-if="child.children.length > 0">
+              <q-collapsible :icon="child.materialIcon" 
+                v-show="showMenuContent(child.role, child.permission)" 
+                :label="child.name">
+                <template v-for="inner in child.children">
+                  <q-side-link :key="inner"  item v-show="showMenuContent(inner.role, inner.permission)" :to="inner.route">
+                    <q-item-side :icon="inner.materialIcon"/>
+                    <q-item-main :label="inner.name" />
+                  </q-side-link>
+                </template>
+              </q-collapsible>
+            </div>
+            <div v-else>
+              <q-side-link  item v-show="showMenuContent(child.role, child.permission)" :to="child.route">
+                <q-item-side :icon="child.materialIcon"/>
+                <q-item-main :label="child.name" />
+              </q-side-link>
+            </div>
           </q-transition>
         </template>
-        </q-collapsible>
+      </q-collapsible>
     </template>
   </q-list>
   

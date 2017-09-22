@@ -17,9 +17,7 @@
           </div>
           <div class="text-right">
             <q-btn color="secondary" @click="createNewRole">
-              <q-icon name="add" />
-              <q-tooltip>Add Role</q-tooltip>
-            </q-btn>
+            Add New Role</q-btn>
           </div>
           <br/>
           <q-data-table
@@ -27,10 +25,10 @@
             :config="configs"
             :columns="columns">
             <template slot="col-status" scope="cell">
-              <span v-if="cell.row.status === true" class="label uppercase bg-positive text-white">
+              <span v-if="cell.row.status === true" class="my-label uppercase bg-positive text-white">
                 <small>Enabled</small>
               </span>
-              <span v-else class="label uppercase bg-negative text-white"><small>Disabled</small></span>
+              <span v-else class="my-label uppercase bg-negative text-white"><small>Disabled</small></span>
             </template>
             <template slot="col-id" scope="cell">
               <q-btn flat small @click="getRolePermissions(cell.row.id, cell.row.description)">Permissions
@@ -47,6 +45,7 @@
                 <q-tooltip>Remove Role</q-tooltip>
               </q-btn>
             </template>
+
           </q-data-table>
         </q-card-main>
         <q-modal ref="roleModal" minimized noBackdropDismiss :content-css="{padding: '20px', width: '350px', textAlign: 'center'}">
@@ -59,18 +58,35 @@
           <q-list separator>
               <q-list-header><big>{{ selectedRoleName }} Permissions</big></q-list-header>
               <q-list-header class="text-negative">Manage permissions of this role</q-list-header>
-              <q-item v-for="(perm, index) in rolePermissions" :key="index">
-                <q-item-main :label="perm.description" />
-                <q-item-side right icon="more_vert">
-                  <q-popover ref="popover">
-                    <q-list link>
-                      <q-item @click="deletePermissions(roleId, perm.id)">
-                        <q-item-main color="negative" label="Remove" />
-                      </q-item>
-                    </q-list>
-                  </q-popover>
-                </q-item-side>
-              </q-item>
+              <q-search v-model="searchRolePermission" @change="filterRolePermissions()" />
+              <div v-if="filteredRolePermissions.length > 0">
+                <q-item v-for="(perm, index) in filteredRolePermissions" :key="index">
+                  <q-item-main :label="perm.description" />
+                  <q-item-side right icon="more_vert">
+                    <q-popover ref="popover">
+                      <q-list link>
+                        <q-item @click="deletePermissions(roleId, perm.id)">
+                          <q-item-main color="negative" label="Remove" />
+                        </q-item>
+                      </q-list>
+                    </q-popover>
+                  </q-item-side>
+                </q-item>
+              </div>
+              <div v-else>
+                <q-item v-for="(perm, index) in rolePermissions" :key="index">
+                  <q-item-main :label="perm.description" />
+                  <q-item-side right icon="more_vert">
+                    <q-popover ref="popover">
+                      <q-list link>
+                        <q-item @click="deletePermissions(roleId, perm.id)">
+                          <q-item-main color="negative" label="Remove" />
+                        </q-item>
+                      </q-list>
+                    </q-popover>
+                  </q-item-side>
+                </q-item>
+              </div>
           </q-list>
           <br>
           <q-btn color="negative" @click="closeModal('rolePermissionModal')">Close</q-btn>
@@ -81,11 +97,21 @@
           <q-list separator>
               <q-list-header><big>Permissions</big></q-list-header>
               <q-list-header class="text-negative">Please select permissions and assign to role</q-list-header>
-              <q-item v-for="(perm, index) in permissions" :key="index">
-                <q-item-main>
-                  <q-checkbox v-if="perm.status === true" v-model="selectedPermissions" :val="perm.id" :label="perm.description" />
-                </q-item-main> 
-              </q-item>
+              <q-search v-model="searchPermission" @change="filterPermissions()" />
+              <div v-if="filteredPermissions.length > 0">
+                <q-item v-for="(perm, index) in filteredPermissions" :key="index">
+                  <q-item-main>
+                    <q-checkbox v-if="perm.status === true" v-model="selectedPermissions" :val="perm.id" :label="perm.description" />
+                  </q-item-main> 
+                </q-item>
+              </div>
+              <div v-else>
+                <q-item v-for="(perm, index) in permissions" :key="index">
+                  <q-item-main>
+                    <q-checkbox v-if="perm.status === true" v-model="selectedPermissions" :val="perm.id" :label="perm.description" />
+                  </q-item-main> 
+                </q-item>
+              </div>
           </q-list>
           <br>
           <q-btn color="negative" @click="closeModal('permissionsModal')">Close</q-btn>
@@ -157,6 +183,8 @@ export default {
   data () {
     return {
       edit: false,
+      searchPermission: '',
+      searchRolePermission: '',
       modalContent: 'Are you sure that you want to delete the role?',
       roles: [],
       role: {
@@ -181,7 +209,6 @@ export default {
       configs: {
         rowHeight: '50px',
         columnPicker: true,
-        title: 'Role List',
         bodyStyle: {
           maxHeight: '400px'
         },
@@ -209,10 +236,12 @@ export default {
       },
       confirmed: false,
       roleId: null,
-      selectedRoleName: 'tesds',
+      selectedRoleName: '',
       selectedPermissions: [],
       rolePermissions: [],
-      permissions: []
+      permissions: [],
+      filteredPermissions: [],
+      filteredRolePermissions: []
     }
   },
   validations: {
@@ -255,6 +284,33 @@ export default {
     ...mapGetters(['getToken'])
   },
   methods: {
+    filterRolePermissions () {
+      if (this.searchRolePermission.length > 2) {
+        this.filteredRolePermissions = []
+        this.filteredRolePermissions = this.rolePermissions.filter(this.checkSearchRolePermission)
+      }
+      else {
+        this.filteredRolePermissions = []
+        this.getPermissions()
+      }
+    },
+    checkSearchRolePermission (perm) {
+      return perm.description.match(this.searchRolePermission)
+    },
+    filterPermissions () {
+      console.log('Search for: ', this.searchPermission)
+      if (this.searchPermission.length > 2) {
+        this.filteredPermissions = []
+        this.filteredPermissions = this.permissions.filter(this.checkSearchPermission)
+      }
+      else {
+        this.filteredPermissions = []
+        this.getPermissions()
+      }
+    },
+    checkSearchPermission (perm) {
+      return perm.description.match(this.searchPermission)
+    },
     addPermissions () {
       if (this.selectedPermissions) {
         this.$http.college.post('roles/roleperms/add', {
@@ -353,6 +409,7 @@ export default {
         }
       }, null).then(response => {
         this.rolePermissions = response.data.data
+        this.filterRolePermissions()
       }).catch(error => {
         console.log(error)
       })

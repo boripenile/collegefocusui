@@ -13,11 +13,16 @@ let state = {
   token: null,
   permissions: [],
   roles: [],
+  academicSession: {},
   geoApiKey: 'AIzaSyCy_Q5Pdi8jXOf7ew93zOfr99oL77jJnRk',
-  countryApiKey: '785caf1227be1502db4107297454cb1d'
+  countryApiKey: '785caf1227be1502db4107297454cb1d',
+  payStackPubKey: 'pk_test_01d27294ef67d16c9e6521c27c3879add1704f1a'
 }
 
 let mutations = {
+  setAcademicSession (state, value) {
+    state.academicSession = value
+  },
   setLayoutNeeded (state, value) {
     state.layoutNeeded = value
   },
@@ -44,10 +49,19 @@ let mutations = {
   },
   setRoles (state, roles) {
     state.roles = roles
+  },
+  setHasSubscription (state, hasSubscription) {
+    state.hasSubscription = hasSubscription
   }
 }
 
 let getters = {
+  getAcademicSession () {
+    return state.academicSession
+  },
+  getPayStackPubKey () {
+    return state.payStackPubKey
+  },
   getLayoutNeeded () {
     return state.layoutNeeded
   },
@@ -74,6 +88,9 @@ let getters = {
   },
   getRoles () {
     return state.roles
+  },
+  getHasSubscription () {
+    return state.hasSubscription
   },
   getCountryApiKey () {
     return state.countryApiKey

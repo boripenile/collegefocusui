@@ -80,6 +80,7 @@
       this.setRoles(null)
       this.setPermissions(null)
       this.setToken(null)
+      this.setAcademicSession(null)
       this.startAnimation()
     },
     beforeDestroy () {
@@ -88,7 +89,7 @@
     },
     computed: {
       ...mapGetters(['getLayoutNeeded', 'getMenuCollapse', 'getToken', 'getUser',
-        'getRoles', 'getPermissions']),
+        'getRoles', 'getPermissions', 'getAcademicSession']),
       heightSize (){
         if (this.$q.platform.is.desktop) {
           return 'items-center'
@@ -126,7 +127,7 @@
     },
     methods: {
       ...mapMutations(['setLayoutNeeded', 'setIsLoginPage', 'setToken',
-        'setPermissions', 'setUser', 'setRoles', 'setPermissions']),
+        'setPermissions', 'setUser', 'setRoles', 'setPermissions', 'setAcademicSession']),
       login () {
         if (this.$v.password.$error) {
           Toast.create.negative({html: this.errorInput.message})
@@ -152,7 +153,7 @@
             this.setPermissions(data.data.user.perms)
             this.setLayoutNeeded(true)
             this.setIsLoginPage(false)
-            this.$router.push('/dashboard')
+            this.$router.push('/profile')
           } 
         }).catch(error => {
           Toast.create.negative('Invalid Username or password')

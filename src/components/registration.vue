@@ -132,7 +132,6 @@
           <!-- Navigation for this step at the end of QStep-->
           <q-stepper-navigation class="row justify-center">
               <q-btn color="orange" :disabled="!isBasicValid" @click="$refs.registration.next()">Continue</q-btn>
-              <q-btn color="red" flat @click="$refs.successful.open()">Open</q-btn>
           </q-stepper-navigation>
         </q-step>
         <q-step icon="person" name="second" title="Contact Information" subtitle="Please provide the school primary contact">
@@ -395,10 +394,6 @@ export default {
     this.getCountries()
   },
   methods: {
-    closeSuccessful () {
-      this.$refs.successful.close()
-      this.$router.replace('/')
-    },
     verifyUsername (callback) {
       if (this.admin.username.length > 2) {
         this.userLoading = true

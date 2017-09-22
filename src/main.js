@@ -18,7 +18,6 @@ import router from 'configs/router'
 import axios from 'configs/axios'
 import store from 'configs/store'
 import Vuelidate from 'vuelidate'
-
 import { mapGetters, mapMutations } from 'vuex'
 // import { sync } from 'vuex-router-sync'
 
@@ -72,14 +71,11 @@ Quasar.start(() => {
     store: store,
     render (h) {
       var logged = this.getToken
-      console.log('Logged 1: ' + logged)
       if (logged) {
-        console.log('Logged 2 : ', logged)
         this.setLayoutNeeded(true)
         this.setIsLoginPage(false)
       }
       else {
-        console.log('Not Logged 3: ', logged)
         this.setLayoutNeeded(false)
         this.setIsLoginPage(true)
       }

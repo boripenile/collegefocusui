@@ -17,9 +17,7 @@
           </div>
           <div class="text-right">
             <q-btn color="secondary" @click="createNewService">
-              <q-icon name="add" />
-              <q-tooltip>Add Servcie</q-tooltip>
-            </q-btn>
+            Add New Service</q-btn>
           </div>
           <br/>
           <q-data-table
@@ -33,10 +31,10 @@
               <span v-else class="label uppercase"><small>Non-academic</small></span>
             </template>
             <template slot="col-status" scope="cell">
-              <span v-if="cell.row.status === true" class="label uppercase bg-positive text-white">
+              <span v-if="cell.row.status === true" class="my-label uppercase bg-positive text-white">
                 <small>Enabled</small>
               </span>
-              <span v-else class="label uppercase bg-negative text-white"><small>Disabled</small></span>
+              <span v-else class="my-label uppercase bg-negative text-white"><small>Disabled</small></span>
             </template>
             <template slot="col-id" scope="cell">
               <q-btn flat small @click="getSchoolsForSubscription(cell.row.id)">Subscribe

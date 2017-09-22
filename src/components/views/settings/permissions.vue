@@ -16,10 +16,8 @@
             </div>
           </div>
           <div class="text-right">
-            <q-btn color="secondary" @click="createNewRole">
-              <q-icon name="add" />
-              <q-tooltip>Add permission</q-tooltip>
-            </q-btn>
+            <q-btn color="secondary" @click="createNewPermission">
+            Add New Permission</q-btn>
           </div>
           <br/>
           <q-data-table
@@ -27,10 +25,10 @@
             :config="configs"
             :columns="columns">
             <template slot="col-status" scope="cell">
-              <span v-if="cell.row.status === true" class="uppercase bg-positive text-white">
+              <span v-if="cell.row.status === true" class="my-label uppercase bg-positive text-white">
                 <small>Enabled</small>
               </span>
-              <span v-else class="uppercase bg-negative text-white"><small>Disabled</small></span>
+              <span v-else class="my-label uppercase bg-negative text-white"><small>Disabled</small></span>
             </template>
             <template slot="selection" scope="selection">
               <q-btn class="primary" clear @click="setSelected(selection)">
@@ -123,7 +121,6 @@ export default {
       configs: {
         rowHeight: '50px',
         columnPicker: true,
-        title: 'Permission List',
         bodyStyle: {
           maxHeight: '400px'
         },
@@ -190,7 +187,7 @@ export default {
       this.edit = true
       this.$refs.permissionData.open()
     },
-    createNewRole () {
+    createNewPermission () {
       this.edit = false
       this.permission = {
         id: '',

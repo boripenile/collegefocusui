@@ -4,9 +4,9 @@
   <q-layout
     ref="layout"
     view="lHh Lpr fff"
-    :left-class="{'bg-grey-2': true}"
+    :left-class="{'bg-grey-1': true}"
   >
-    <q-toolbar slot="header" color="teal" class="glossy" v-if="getUser">
+    <q-toolbar slot="header" color="teal" v-if="getUser">
       <q-btn
         flat
         @click="$refs.layout.toggleLeft()"
@@ -14,8 +14,11 @@
         <q-icon name="menu" />
       </q-btn>
 
-      <q-toolbar-title>
-        CollegeFocus
+      <q-toolbar-title v-if="schoolName">
+        {{ schoolName }}
+      </q-toolbar-title>
+      <q-toolbar-title v-else>
+        CollegeFocus Super
         <div slot="subtitle">v1.1</div>
       </q-toolbar-title>
     </q-toolbar>
@@ -26,39 +29,32 @@
         instead of <q-item> for
         internal vue-router navigation
       -->
-      <div class="row" id="profile">
-      <!-- <img :src="photo" style='height: 80px' class="inline-block"> -->
-          <div class="col-4">
-          <img src="./assets/img/avatar-1.svg" id="avatar" class="inline-block"> 
+      <div class="row justify-center" v-if="getUser">
+          <div class="col-xs-12 col-sm-12 col-md-12 text-center">
+            <q-icon name="account_circle" style="font-size: 90px; color: #A0A0A0;" />
           </div>
-          <!-- <div class="row"> -->
-          <div class="col-8" id="user-name" v-if="getUser">
-              <span class="text-black"> {{ getUser.username }} </span>
-              <hr>
-              <span class="text-black"> {{ getUser.email }} </span>
-              <hr>
+          <div class="col-xs-12 col-sm-12 col-md-12 text-center">
+            Welcome <h5>{{ getUser.username }}</h5>
           </div>
       </div>
-      <q-fab
-          color="teal"
-          icon="keyboard_arrow_right"
-          direction="right"
-          class="pad">
-          <q-fab-action
-            class="white"
-            @click="logOut"
+      <div class="row justify-center" v-if="getUser">
+        <q-btn
+            class="white pad"
+            round
+            @click="profile"
             icon="person"
           >
           <q-tooltip anchor="center left" self="center right" :offset="[0, 10]">Profile</q-tooltip>
-          </q-fab-action>
-          <q-fab-action
+          </q-btn>
+          <q-btn
             class="white"
+            round
             @click="logOut"
             icon="exit_to_app"
           >
           <q-tooltip anchor="center left" self="center right" :offset="[0, 10]">Log Out</q-tooltip>
-          </q-fab-action>
-        </q-fab>
+          </q-btn>
+      </div>
       <app-menu :links="links"></app-menu>
     </div>
 
@@ -95,6 +91,7 @@ import {
 import { mapGetters, mapMutations } from 'vuex'
 import AppMenu from 'components/Menu'
 import Menus from 'configs/menus'
+
 export default {
   name: 'index',
   components: {
@@ -127,20 +124,34 @@ export default {
   },
   computed: {
     ...mapGetters(['getLayoutNeeded', 'getMenuCollapse', 'getToken', 'getUser',
-      'getRoles', 'getPermissions'])
+      'getRoles', 'getPermissions']),
+    schoolName () {
+      console.log('Here...')
+      if (this.getUser) {
+        if (this.getUser.school) {
+          var school = this.getUser.school
+          console.log('School...: ', school)
+          return school.schoolName
+        }
+      }
+    }
   },
   methods: {
     ...mapMutations(['setLayoutNeeded', 'setIsLoginPage',
-      'setToken', 'setPermissions', 'setUser', 'setRoles']),
+      'setToken', 'setPermissions', 'setUser', 'setRoles', 'setAcademicSession']),
     logOut () {
       console.log('User', JSON.stringify(this.getUser))
       this.setUser(null)
       this.setToken(null)
       this.setRoles(null)
       this.setPermissions(null)
+      this.setAcademicSession(null)
       this.setLayoutNeeded(false)
       this.setIsLoginPage(true)
-      this.$router.push('/')
+      this.$router.replace('/')
+    },
+    profile () {
+      this.$router.replace('/profile')
     },
     launch (url) {
       openURL(url)
@@ -159,6 +170,7 @@ export default {
     }
   },
   mounted () {
+    // this.setSchoolName()
     this.$nextTick(() => {
       if (this.orienting) {
         window.addEventListener('deviceorientation', this.orient, false)
@@ -176,6 +188,7 @@ export default {
     this.setIsLoginPage(true)
     this.setRoles(null)
     this.setPermissions(null)
+    this.setAcademicSession(null)
     this.setUser(null)
     this.setToken(null)
     if (this.orienting) {
@@ -192,19 +205,13 @@ export default {
 </script>
 
 <style>
-  #avatar{
-    padding: 20px;
-  }
-  #profile {
-    height: 80px;
-    background-color: #FAFAFA;
-  }
-  #user-name {
-    margin-top: 15px;
-    width: 159px;
+  #q-app {
+    font-family: 'Avenir', Helvetica, Arial, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
   }
   .pad {
-    padding: 15px;
+    margin-right: 15px;
   }
   .custom-enter-active {
     transition: all .3s ease;
@@ -215,6 +222,11 @@ export default {
   .custom-enter, .custom-leave-to {
     transform: translateX(10px);
     opacity: 0;
+  }
+  .my-label {
+    padding: 5px;
+    border-radius: 3px;
+    display: inline-block;
   }
   /* .q-card {
     -webkit-box-shadow: none;

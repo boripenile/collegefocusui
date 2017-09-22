@@ -23,6 +23,7 @@ var router = new VueRouter({
    */
   routes: [
     { path: '/dashboard', name: 'Dashboard', component: load('views/dashboard') },
+    { path: '/profile', name: 'UserProfile', component: load('views/profile') },
     { path: '/', name: 'Login', component: load('views/login/login-college') },
     { path: '/roles', name: 'Roles', component: load('views/settings/roles') },
     { path: '/permissions', name: 'Permissions', component: load('views/settings/permissions') },
@@ -30,6 +31,7 @@ var router = new VueRouter({
     { path: '/features', name: 'Features', component: load('features') },
     { path: '/registration/:type', name: 'Registration', component: load('registration') },
     { path: '/activate/:code', name: 'Activation', component: load('activation') },
+    { path: '/schoolsections', name: 'Activation', component: load('views/schools/settings/sections') },
     // Always leave this last one
     { path: '*', component: load('Error404') } // Not found
   ],
@@ -66,7 +68,7 @@ router.beforeEach((to, from, next) => {
   else {
     if (to.name === 'Login') {
       next({
-        path: '/dashboard',
+        path: '/profile',
         query: {redirect: to.fullPath}
       })
     }
