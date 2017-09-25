@@ -31,8 +31,10 @@ var router = new VueRouter({
     { path: '/features', name: 'Features', component: load('features') },
     { path: '/registration/:type', name: 'Registration', component: load('registration') },
     { path: '/activate/:code', name: 'Activation', component: load('activation') },
-    { path: '/schoolsections', name: 'Activation', component: load('views/schools/settings/sections') },
-    // Always leave this last one
+    { path: '/schoolsections', name: 'SchoolSection', component: load('views/schools/settings/sections') },
+    { path: '/schoolclass', name: 'SectionClass', component: load('views/schools/settings/sectionclass') },
+    { path: '/subjects', name: 'SectionClass', component: load('views/schools/settings/schoolsubjects') },
+    // Always leave this last one 
     { path: '*', component: load('Error404') } // Not found
   ],
   mode: 'history',

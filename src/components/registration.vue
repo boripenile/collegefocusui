@@ -81,7 +81,6 @@
                     @blur="$v.school.selected.$touch"
                     v-model="school.selected" @keyup="checkBasicData"
                     float-label="Country" @change="onCountrySelect($event)"
-                    filter filter-placeholder="Search"
                     :options="countries" />
               </q-field>
             </div>
@@ -215,10 +214,6 @@
             </div>
             <div class="col-xs-12 col-sm-6 col-md-6">
               <q-field>
-                <!-- <password :placeholder="passwordPlaceholder" 
-                  @blur="$v.admin.password.$touch" @keyup="checkAdminData"
-                  v-model="admin.password" class="input full-width text-left"
-                  :secureLength="secureLength"></password> -->
                 <q-input stack-label="Choose a password"
                   @blur="$v.admin.password.$touch" @keyup="checkAdminData" :min="6"
                   class="full-width text-left" type="password" v-model="admin.password" />
@@ -690,12 +685,15 @@ export default {
         .then(response => {
           if (response.data) {
             var data = response.data
-            for (var index = 0; index < data.length; index++) {
+            var filterCountries = data.filter(function (country) {
+              return country.alpha2Code.toLowerCase().match('ng')
+            })
+            for (var index = 0; index < filterCountries.length; index++) {
               this.countries.push({
-                value: data[index].alpha2Code,
-                label: data[index].name,
-                avatar: data[index].flag,
-                callingCode: data[index].callingCodes[0]
+                value: filterCountries[index].alpha2Code,
+                label: filterCountries[index].name,
+                avatar: filterCountries[index].flag,
+                callingCode: filterCountries[index].callingCodes[0]
               })
             }
           }

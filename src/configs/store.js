@@ -14,12 +14,16 @@ let state = {
   permissions: [],
   roles: [],
   academicSession: {},
+  schoolSection: {},
   geoApiKey: 'AIzaSyCy_Q5Pdi8jXOf7ew93zOfr99oL77jJnRk',
   countryApiKey: '785caf1227be1502db4107297454cb1d',
   payStackPubKey: 'pk_test_01d27294ef67d16c9e6521c27c3879add1704f1a'
 }
 
 let mutations = {
+  setSchoolSection (state, value) {
+    state.schoolSection = value
+  },
   setAcademicSession (state, value) {
     state.academicSession = value
   },
@@ -56,6 +60,9 @@ let mutations = {
 }
 
 let getters = {
+  getSchoolSection () {
+    return state.schoolSection
+  },
   getAcademicSession () {
     return state.academicSession
   },

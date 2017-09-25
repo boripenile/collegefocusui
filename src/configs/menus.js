@@ -12,49 +12,50 @@ export default {
   },
   'School Settings': {
     routes: [
-      { route: '/academicterms', materialIcon: 'perm_identity', name: 'Academic Terms', role: 'admin-basic', permission: 'academic:term:view', children: [] },
-      { route: '/departments', materialIcon: 'supervisor_account', name: 'Manage Departments', role: 'admin-basic', permission: 'department:view', children: [] },
+      { route: '/academicterms', materialIcon: 'perm_identity', name: 'Academic Terms', role: 'admin', permission: 'academic:term:view', children: [] },
+      { route: '/departments', materialIcon: 'supervisor_account', name: 'Manage Departments', role: 'admin', permission: 'department:view', children: [] },
       { route: '',
         materialIcon: 'perm_identity',
         name: 'Sections',
-        role: 'admin-basic',
+        role: 'admin',
         permission: 'school:section:view',
         children: [
           {
-            route: '/schoolsections', materialIcon: 'perm_identity', name: 'School Sections', role: 'admin-basic', permission: 'school:section:view'
+            route: '/schoolsections', materialIcon: 'perm_identity', name: 'School Sections', role: 'admin', permission: 'school:section:view'
           },
           {
-            route: '/teachersections', materialIcon: 'perm_identity', name: 'Teachers’ Sections', role: 'admin-basic', permission: 'teacher:section:view'
+            route: '/teachersections', materialIcon: 'perm_identity', name: 'Teachers’ Sections', role: 'admin', permission: 'teacher:section:view'
           }
         ]
       },
-      { route: '/grading', materialIcon: 'supervisor_account', name: 'Grading Policy', role: 'admin-basic', permission: 'department:view', children: [] },
+      { route: '/schoolclass', materialIcon: 'supervisor_account', name: 'Manage Classrooms', role: 'admin', permission: 'school:class:view', children: [] },
+      { route: '/grading', materialIcon: 'supervisor_account', name: 'Grading Policy', role: 'admin', permission: 'school:grade:view', children: [] },
       { route: '',
         materialIcon: 'perm_identity',
         name: 'Subjects',
-        role: 'admin-basic',
+        role: 'admin',
         permission: 'school:section:view',
         children: [
           {
-            route: '/subjects', materialIcon: 'perm_identity', name: 'Manage Subjects', role: 'admin-basic', permission: 'school:section:view'
+            route: '/subjects', materialIcon: 'perm_identity', name: 'Manage Subjects', role: 'admin', permission: 'school:subject:view'
           },
           {
-            route: '/subjecthemes', materialIcon: 'perm_identity', name: 'Subject Themes', role: 'admin-basic', permission: 'teacher:section:view'
+            route: '/subjecthemes', materialIcon: 'perm_identity', name: 'Subject Themes', role: 'admin', permission: 'teacher:section:view'
           },
           {
-            route: '/classroomsubjects', materialIcon: 'perm_identity', name: 'Classrooms’ Subjects', role: 'admin-basic', permission: 'school:section:view'
+            route: '/classroomsubjects', materialIcon: 'perm_identity', name: 'Classrooms’ Subjects', role: 'admin', permission: 'school:section:view'
           },
           {
-            route: '/teachersubjects', materialIcon: 'perm_identity', name: 'Teachers’ Subjects', role: 'admin-basic', permission: 'teacher:section:view'
+            route: '/teachersubjects', materialIcon: 'perm_identity', name: 'Teachers’ Subjects', role: 'admin', permission: 'teacher:section:view'
           },
           {
-            route: '/studentsubjects', materialIcon: 'perm_identity', name: 'Students’ Subjects', role: 'admin-basic', permission: 'teacher:section:view'
+            route: '/studentsubjects', materialIcon: 'perm_identity', name: 'Students’ Subjects', role: 'admin', permission: 'teacher:section:view'
           }
         ]
       }
     ],
     icon: 'home',
-    role: 'admin-basic',
+    role: 'admin',
     permission: 'academic:view'
   },
   'System Users': {
@@ -62,48 +63,48 @@ export default {
       { route: '',
         materialIcon: 'perm_identity',
         name: 'Teaching Staff',
-        role: 'admin-basic',
+        role: 'admin',
         permission: 'school:section:view',
         children: [
           {
-            route: '/teachers', materialIcon: 'perm_identity', name: 'Manage Teachers', role: 'admin-basic', permission: 'school:section:view'
+            route: '/teachers', materialIcon: 'perm_identity', name: 'Manage Teachers', role: 'admin', permission: 'school:section:view'
           },
           {
-            route: '/teacherroles', materialIcon: 'perm_identity', name: 'Teachers\' Roles', role: 'admin-basic', permission: 'school:section:view'
+            route: '/teacherroles', materialIcon: 'perm_identity', name: 'Teachers\' Roles', role: 'admin', permission: 'school:section:view'
           },
           {
-            route: '/teacherpermissions', materialIcon: 'perm_identity', name: 'Teachers\' Permissions', role: 'admin-basic', permission: 'teacher:section:view'
+            route: '/teacherpermissions', materialIcon: 'perm_identity', name: 'Teachers\' Permissions', role: 'admin', permission: 'teacher:section:view'
           }
         ]
       },
       { route: '',
         materialIcon: 'perm_identity',
         name: 'Non-Teaching Staff',
-        role: 'admin-basic',
+        role: 'admin',
         permission: 'school:section:view',
         children: [
           {
-            route: '/otherstaff', materialIcon: 'perm_identity', name: 'Other Staff', role: 'admin-basic', permission: 'school:section:view'
+            route: '/otherstaff', materialIcon: 'perm_identity', name: 'Other Staff', role: 'admin', permission: 'school:section:view'
           }
         ]
       },
       { route: '',
         materialIcon: 'perm_identity',
         name: 'Students',
-        role: 'admin-basic',
+        role: 'admin',
         permission: 'school:section:view',
         children: [
           {
-            route: '/students', materialIcon: 'perm_identity', name: 'Manage Students', role: 'admin-basic', permission: 'school:section:view'
+            route: '/students', materialIcon: 'perm_identity', name: 'Manage Students', role: 'admin', permission: 'school:section:view'
           },
           {
-            route: '/studentguardian', materialIcon: 'perm_identity', name: 'Students\' Guardian', role: 'admin-basic', permission: 'school:section:view'
+            route: '/studentguardian', materialIcon: 'perm_identity', name: 'Students\' Guardian', role: 'admin', permission: 'school:section:view'
           }
         ]
       }
     ],
     icon: 'home',
-    role: 'admin-basic',
+    role: 'admin',
     permission: 'academic:view'
   }
 }

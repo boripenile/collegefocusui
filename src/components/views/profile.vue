@@ -230,11 +230,21 @@
                     <h6>Academic Sessions</h6>
                 </q-list-header>
             </q-list>
-            <q-list class="text-center">
+            <div class="row">
+              <div class="col-12 text-center">
+                <small>Select an academic session to continue</small>
+              </div>
+            </div>
+            <q-list class="text-center" inset-separator>
                 <q-item v-for="(academic, index) in academicSessions" :key="index">
-                    <q-alert class="col-12" color="light-green-8" icon="query_builder" enter="bounceInLeft" leave="bounceOutRight" appear :actions="[{label: 'Select to Continue', handler () { setSession(academic.sessionId) }}]">
-                        <h6 class="text-white text-bold">{{ academic.sessionName }}</h6>
-                    </q-alert>
+                <q-item-side left icon="accessibility" />
+                <q-item-main :label="academic.sessionName" />
+                <q-item-side right>
+                  <span>
+                    <q-btn round flat icon="send" color="positive" @click="setSession(academic.sessionId)">
+                    </q-btn>
+                  </span>
+                </q-item-side>
                 </q-item>
             </q-list>
     
@@ -272,7 +282,8 @@ import {
   QIcon,
   QTabs,
   QTab,
-  QTabPane
+  QTabPane,
+  QItemSide
 } from 'quasar'
 // import _ from 'lodash'
 export default {
@@ -366,7 +377,8 @@ export default {
     QIcon,
     QTabs,
     QTab,
-    QTabPane
+    QTabPane,
+    QItemSide
   },
   mounted () {
     if (this.getUser.school) {

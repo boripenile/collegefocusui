@@ -167,6 +167,23 @@ export default {
         this.rotateX = evt.beta * 0.7
         this.rotateY = evt.gamma * -0.7
       }
+    },
+    checkRoleAndPermission (role, permission) {
+      if (this.$store.state.roles) {
+        var list = this.$store.state.roles.filter(function (item) {
+          return item.match(role)
+        })
+        if (list.length > 0 && this.$store.state.permissions.indexOf(permission.toLowerCase()) > -1) {
+          return true
+        }
+      }
+    },
+    checkPermission (permission) {
+      if (this.$store.state.permissions) {
+        if (this.$store.state.permissions.indexOf(permission.toLowerCase()) > -1) {
+          return true
+        }
+      }
     }
   },
   mounted () {

@@ -75,10 +75,11 @@
         return text
       },
       showMenuContent (role, permission) {
-        console.log('checking permission, ' + role + ' ' + permission)
         if (this.$store.state.roles) {
-          if (this.$store.state.roles.indexOf(role.toLowerCase()) > -1 && this.$store.state
-            .permissions.indexOf(permission.toLowerCase()) > -1) {
+          var list = this.$store.state.roles.filter(function (item) {
+            return item.match(role)
+          });
+          if (list.length > 0 && this.$store.state.permissions.indexOf(permission.toLowerCase()) > -1) {
             return true
           }
         }

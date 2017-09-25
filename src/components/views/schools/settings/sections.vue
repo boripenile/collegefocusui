@@ -4,7 +4,7 @@
         <q-card-title class="secondary">Manage Sections</q-card-title>
         <q-card-main>
           <div class="text-right">
-            <q-btn color="secondary" @click="createNewSection">
+            <q-btn v-show="checkPermission('school:class:create')" color="secondary" @click="createNewSection">
             Add New Section</q-btn>
           </div>
           <br/>
@@ -13,11 +13,11 @@
             :config="configs"
             :columns="columns">
             <template slot="selection" scope="selection">
-              <q-btn class="primary" clear @click="setSelected(selection)">
+              <q-btn v-show="checkRoleAndPermission('admin', 'school:section:update')" class="primary" clear @click="setSelected(selection)">
                 <q-icon name="edit" />
                 <q-tooltip>Edit Section</q-tooltip>
               </q-btn>
-              <q-btn class="negative" clear @click="deleteSection(selection)">
+              <q-btn v-show="checkRoleAndPermission('admin', 'school:section:delete')" class="negative" clear @click="deleteSection(selection)">
                 <q-icon name="delete" />
                 <q-tooltip>Remove Section</q-tooltip>
               </q-btn>
@@ -169,6 +169,26 @@ export default {
             callback()
           }
         })
+    },
+    checkRoleAndPermission (role, permission) {
+      if (this.$store.state.roles) {
+        var list = this.$store.state.roles.filter(function (item) {
+          return item.match(role)
+        });
+        if (list.length > 0 && this.$store.state.permissions.indexOf(permission.toLowerCase()) > -1) {
+          return true
+        }
+      }
+    },
+    checkPermission (permission) {
+      if (this.$store.state.permissions) {
+        if (this.$store.state.permissions.indexOf(permission.toLowerCase()) > -1) {
+          return true
+        }
+      }
+    },
+    checkSearchPermission (perm) {
+      return perm.match(this.searchPermission)
     },
     loadPermissions () {
       this.$refs.permissionsModal.open()
